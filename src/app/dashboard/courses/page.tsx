@@ -750,15 +750,31 @@ export default function CoursesAdminPage() {
     }
   }
 
-  function openModuleContent(module: ModuleItem) {
-    if (module.asset?.url) {
-      window.open(module.asset.url, '_blank');
-    } else if (module.assetLink) {
-      window.open(module.assetLink, '_blank');
-    } else {
-      alert("No content available for this module");
-    }
+  // function openModuleContent(module: ModuleItem) {
+  //   if (module.asset?.url) {
+  //     window.open(module.asset.url, '_blank');
+  //   } else if (module.assetLink) {
+  //     window.open(module.assetLink, '_blank');
+  //   } else {
+  //     alert("No content available for this module");
+  //   }
+  // }
+
+
+function openModuleContent(module: ModuleItem) {
+  const pdfUrl = module.asset?.url || module.assetLink;
+
+  if (!pdfUrl) {
+    alert("No content available for this module");
+    return;
   }
+
+  window.open(
+    `${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`,
+    "_blank"
+  );
+}
+
 
   // Pagination handlers
   function goToPage(page: number) {
