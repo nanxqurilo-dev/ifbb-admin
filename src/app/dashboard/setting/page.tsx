@@ -156,7 +156,7 @@ export default function AdminSettings() {
         return;
       }
       if (form.changePassword.new.length < 6) {
-        setStatus({ type: "error", message: "Naya password kam se kam 6 characters ka hona chahiye" });
+        setStatus({ type: "error", message: "New password atleast 6 character" });
         setSaving(false);
         return;
       }

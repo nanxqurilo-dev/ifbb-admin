@@ -120,20 +120,51 @@ async function toggleCourseVisibility(courseId: string, isPublic: boolean, token
   }
 }
 
+// async function createCourse(courseData: FormData, token: string) {
+//   try {
+//     const response = await fetch(`${API_BASE_URL}/create-course`, {
+//       method: 'POST',
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//       },
+//       body: courseData
+//     });
+
+//     if (!response.ok) {
+//       const errorText = await response.text();
+//       console.error("Create course error response:", errorText);
+//       throw new Error(`Failed to create course: ${response.status} - ${errorText}`);
+//     }
+
+//     return await response.json();
+//   } catch (error) {
+//     console.error("Error creating course:", error);
+//     throw error;
+//   }
+// }
+
+
+
+
 async function createCourse(courseData: FormData, token: string) {
   try {
     const response = await fetch(`${API_BASE_URL}/create-course`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
-      body: courseData
+      body: courseData,
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Create course error response:", errorText);
-      throw new Error(`Failed to create course: ${response.status} - ${errorText}`);
+      const errorData = await response.json().catch(() => null);
+
+      console.error("Backend Error:", errorData);
+
+      throw new Error(
+        errorData?.message ||
+        `Failed to create course (${response.status})`
+      );
     }
 
     return await response.json();
@@ -142,6 +173,9 @@ async function createCourse(courseData: FormData, token: string) {
     throw error;
   }
 }
+
+
+
 
 async function updateCourse(courseId: string, courseData: FormData, token: string) {
   try {
@@ -697,13 +731,29 @@ export default function CoursesAdminPage() {
         setEditing(null);
         alert(editing._id ? "Course updated successfully!" : "Course created successfully!");
       }
-    } catch (error) {
-      console.error("Error saving course:", error);
-      alert("Failed to save course. Please try again.");
-    } finally {
-      setSaving(false);
     }
-  }
+    //  catch (error) {
+    //   console.error("Error saving course:", error);
+    //   alert(error);
+    // } finally {
+    //   setSaving(false);
+    // }
+
+
+     catch (error: any) {
+  console.error("Error saving course:", error);
+
+  alert(
+    error?.message ||
+    "Something went wrong while creating the course."
+  );
+} finally {
+  setSaving(false);
+}
+
+
+
+}
 
   async function onDelete(courseId: string) {
     if (!token) return;
@@ -1230,7 +1280,7 @@ export default function CoursesAdminPage() {
                   <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
                   <textarea
                     value={editing.description || ""}
-                    placeholder="Please fill atleast 10 words..."
+                    placeholder="Description should be at least 10 characters long"
                     onChange={(e) => setEditing({ ...editing, description: e.target.value })}
                     rows={3}
                     className="w-full px-4 py-3 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition resize-none text-slate-900"
